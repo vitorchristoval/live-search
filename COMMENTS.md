@@ -33,3 +33,15 @@ Percebi que meu componente está com códigos demais para um componente, preciso
 
 Estava analisando o layout do figma, para ajustar algumas coisas no projeto que não estão finalizadas e esbarrei no problema de que o filme em destaque traz o genero escrito, enquanto no search que utilizei os generos veem em formato de id. 
 Vou olhar melhor a api, mas acredito que vou seguir umas das opções : Fazer um get dos detalhes do filme destaque, que trazem essa informação escrita. Ou criar uma lista com todas os generos/id.
+
+Dentro da api encontrei um get com a listagem de generos e seus ids. É uma lista pequena de 19 generos, pensei em criar um arquivo e fazer a consulta localmente, porém pensando em um sistema que não quebre, criei um contexto que faz essa chamada uma vez ao iniciar para que sempre esteja a lista atualizada e caso sejam criados novos generos, o sistema não quebre.
+
+Percebi que as tipagens direto nos arquivos estavam me incomodando, e por se repetir em alguns componentes, resolvi separar em uma pasta de types. 
+
+Comecei a adicionar icones que havia esquecido, percebi que não tenho acesso para exportar as imagens do figma, pensei em utilizar o  [https://heroicons.com/](https://heroicons.com/) Heroicons que possui SVGs próximos ao do layout. 
+
+Percebi que meu search busca apenas filmes, existe um endpoint para buscar TV Shows e Filmes dentro da api, porém o retorno vem com um objeto diferente. 
+
+Parece que quando é filme retorna o nome dentro de um title:'nome' e quando é uma série/tv show o objeto traz como name:'nome'. Não sei como vou resolver isso ainda. Vou pensar mais pra frente.
+
+Preciso adicionar os icones de favorito. Ainda não pensei como vou fazer a interação para adicionar o favorito e manter salvo. Meu primeiro pensamento mais óbvio foi o LocalStorage, mas não sei se vou manter isso. Posso criar uma sessão p
