@@ -24,42 +24,48 @@ interface SuggestionsListProps {
   query: string;
 }
 
+// Função auxiliar para destacar a query no texto
+const highlightMatch = (text: string, query: string) => {
+  const parts = text.split(new RegExp(`(${query})`, 'gi'));
+  return parts.map((part, index) =>
+    part.toLowerCase() === query.toLowerCase() ? <strong key={index}>{part}</strong> : part
+  );
+};
+
 export default function SuggestionsList({ suggestions, selectedIndex, setSelectedIndex, setQuery, query }: SuggestionsListProps) {
-
-  const highlightMatch = (text: string, query: string) => {
-    const parts = text.split(new RegExp(`(${query})`, 'gi'));
-    return parts.map((part, index) =>
-      part.toLowerCase() === query.toLowerCase() ? <strong key={index}>{part}</strong> : part
-    );
-  };
-
-
+  // Filtra o item que deu match exato
+  const exactMatch = suggestions.find(item => item.title.toLowerCase() === query.toLowerCase());
+  // Filtra os itens que não deram match exato
+  const filteredSuggestions = suggestions.filter(item => item.title.toLowerCase() !== query.toLowerCase());
 
   return (
-    <ul className=''>
-      {suggestions.map((item, index) => {
-        const isSelected = index === selectedIndex;
-        const isMatch = query.toLowerCase() === item.title.toLowerCase();
-
-        return (
-          <li
-            key={item.id}
-            className={`cursor-pointer p-2 ${isMatch ? 'font-bold bg-blue-200' : ''} ${isSelected ? 'bg-gray-200' : ''}`}
-            onMouseEnter={() => setSelectedIndex(index)}
-            onClick={() => setQuery(item.title)}
-          >
-            {highlightMatch(item.title, query)}
-            {isMatch && (
-              <div className="flex mt-2">
-                <img src={`https://image.tmdb.org/t/p/w200${item.poster_path}`} alt={item.title} className="w-16 h-24 mr-4" />
-                <div>
-                  <p className="text-sm">{item.overview}</p>
-                </div>
-              </div>
-            )}
-          </li>
-        );
-      })}
+    <ul className="list-none p-0 mt-2">
+      {exactMatch && (
+        <li
+          key={exactMatch.id}
+          className="cursor-pointer p-2 font-bold bg-blue-200"
+          onMouseEnter={() => setSelectedIndex(0)}
+          onClick={() => setQuery(exactMatch.title)}
+        >
+          <div className="flex mt-2">
+            <img src={`https://image.tmdb.org/t/p/w200${exactMatch.poster_path}`} alt={exactMatch.title} className="w-16 h-24 mr-4" />
+            <div>
+              {highlightMatch(exactMatch.title, query)} ({exactMatch.release_date})
+              <div className="text-sm">{}</div>
+            </div>
+          </div>
+        </li>
+      )}
+      {filteredSuggestions.map((item, index) => (
+        <li
+          key={item.id}
+          className={`cursor-pointer p-2 ${index + 1 === selectedIndex ? 'bg-gray-200' : ''}`}
+          onMouseEnter={() => setSelectedIndex(index + 1)}
+          onClick={() => setQuery(item.title)}
+        >
+          {highlightMatch(item.title, query)}
+        </li>
+      ))}
     </ul>
   );
 }
