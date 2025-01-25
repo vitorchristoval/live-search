@@ -7,6 +7,8 @@ import { Movie } from '@/types/movie';
 export default function SearchInput() {
   const { request } = useApiServices();
   const [query, setQuery] = useState<string>('');
+  const [page, setPage] = useState<number>(1);
+  const [loading, setLoading] = useState<boolean>(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [autocomplete, setAutocomplete] = useState<string>('');
   const [suggestions, setSuggestions] = useState<Movie[]>([]);
@@ -14,32 +16,45 @@ export default function SearchInput() {
 
 
   // Função debounce
-  const debounce = (func: (query: string) => void, delay: number) => {
+  const debounce = (func: (query: string, page: number) => void, delay: number) => {
     let timeoutId: NodeJS.Timeout;
-    return (query: string) => {
+    return (query: string, page: number) => {
       if (timeoutId) clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-        func(query);
+        func(query, page);
       }, delay);
     };
   };
 
   // Função para buscar sugestões
-  const fetchSuggestions = useCallback(debounce((query: string) => {
-    request.get('/search/movie?query=' + query)
-      .then((response) => { setSuggestions(response.data.results) })
-      .catch((error) => { console.log(error) });
+  const fetchSuggestions = useCallback(debounce((query: string, page: number) => {
+    request.get(`/search/movie?query=${query}&page=${page}`)
+      .then((response) => {
+        if (page > 1) {
+          setSuggestions(prevSuggestions => [...prevSuggestions, ...response.data.results]);
+        } else {
+          setSuggestions(response.data.results);
+        }
+      })
+      .catch((error) => { console.log(error) })
+      .finally(() => setLoading(false));
   }, 500), []);
 
   useEffect(() => {
     if (query) {
-      fetchSuggestions(query);
+      fetchSuggestions(query, 1);
     }
   }, [query, fetchSuggestions]);
 
   useEffect(() => {
+    setLoading(true)
+    fetchSuggestions(query, page);
+    console.log(page)
+  }, [page]);
+
+  useEffect(() => {
     if (suggestions.length > 0) {
-   
+
       const filtered = suggestions.filter(item => item.title.toLowerCase().includes(query.toLowerCase()));
       const sorted = filtered.sort((a, b) => {
         const aStartsWith = a.title.toLowerCase().startsWith(query.toLowerCase());
@@ -93,11 +108,12 @@ export default function SearchInput() {
     if (e.target.value === '') {
       setFilteredSuggestions([]);
       setSuggestions([]);
+      setPage(1)
     }
   };
 
   return (
-    <div className='mt-10'>
+    <div className='mt-10 w-3/4'>
       <p className='text-sm font-medium text-[#464646] mb-1'>Pesquise um filme</p>
       <div className='relative'>
         <input
@@ -106,14 +122,14 @@ export default function SearchInput() {
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder="Ex: Star Wars"
-          className={`text-sm border py-2 px-3 border-[#616161] min-h-8 rounded-lg w-auto md:w-[480px] placeholder-[#8E8E8E] focus:outline-[#006EFF] focus:outline-1 ${query.length > 0 && 'border-[#006EFF]'}`}
+          className={`text-sm border py-2 px-3 border-[#616161] min-h-8 rounded-lg w-full md:w-[480px] placeholder-[#8E8E8E] focus:outline-[#006EFF] focus:outline-1 ${query.length > 0 && 'border-[#006EFF]'}`}
         />
 
         {autocomplete && query && (
           <input
             type="text"
             value={autocomplete !== query ? autocomplete + ' - Utilize a tecla → para aceitar a sugestão' : ''}
-            className='absolute top-0 left-0 text-sm border py-2 px-3 border-transparent min-h-8 rounded-lg w-auto md:w-[480px] text-[#8E8E8E] pointer-events-none'
+            className='absolute top-0 left-0 text-sm border py-2 px-3 border-transparent min-h-8 rounded-lg w-full md:w-[480px] text-[#8E8E8E] pointer-events-none'
             style={{ opacity: 0.5 }}
             readOnly
           />
@@ -135,6 +151,9 @@ export default function SearchInput() {
           setSelectedIndex={setSelectedIndex}
           setQuery={setQuery}
           query={query}
+          setPage={setPage}
+          page={page}
+          loading={loading}
         />)}
     </div>
   );

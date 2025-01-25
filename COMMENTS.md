@@ -44,4 +44,14 @@ Percebi que meu search busca apenas filmes, existe um endpoint para buscar TV Sh
 
 Parece que quando é filme retorna o nome dentro de um title:'nome' e quando é uma série/tv show o objeto traz como name:'nome'. Não sei como vou resolver isso ainda. Vou pensar mais pra frente.
 
-Preciso adicionar os icones de favorito. Ainda não pensei como vou fazer a interação para adicionar o favorito e manter salvo. Meu primeiro pensamento mais óbvio foi o LocalStorage, mas não sei se vou manter isso. Posso criar uma sessão p
+Preciso adicionar os icones de favorito. Ainda não pensei como vou fazer a interação para adicionar o favorito e manter salvo. Meu primeiro pensamento mais óbvio foi o LocalStorage, mas não sei se vou manter isso. Posso criar uma sessão para esse usuario através da api do moviedb. Vou pensar nisso mais pra frente.
+
+
+Novo dia, novos focos. Hoje acordei pensando em fazer a páginação dos filmes, conforme o usuário scrolla a lista. Meu primeiro pesamento foi usar o useRef do react para criar uma referencia dessa lista e controlar através de um useEffect medindo o scroll que foi feito, o tamanho do scroll e calcualr se chegou no fim. Provavelmente vou seguir nessa ideia. 
+
+a ideia do useRef funcionou muito bem, pensei em adicionar um loading no final do scroll para não ficar esse gap de apenas carregar mais objetos sem nenhum aviso pro usuario. 
+
+Percebi que não tinha visto que o projeto precisava estar configurado com o docker, então vou fazer aqui uma configuração para seguir o pedido. 
+
+Apeasr de nunca ter configurado um docker, após ler algumas docs achei super tranquilo. Docker configurado!
+
