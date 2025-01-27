@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Live Search with MovieDB API
 
-## Getting Started
+Este é um projeto de **Live Search** que utiliza a API do **MovieDB** (The Movie Database) para buscar filmes em tempo real, à medida que o usuário digita. A aplicação foi configurada para rodar dentro de containers Docker, facilitando o setup e a execução.
 
-First, run the development server:
+## Requisitos
+
+Antes de começar, verifique se você tem os seguintes pré-requisitos instalados:
+
+- [Docker](https://www.docker.com/get-started)
+- [Make](https://www.gnu.org/software/make/)
+
+## Configuração
+
+1. Clone este repositório:
+
+    ```bash
+    git clone https://github.com/vitorchristoval/live-search.git
+    cd live-search
+    ```
+
+2. Crie um arquivo `.env.local` na raiz do projeto e adicione sua `API_KEY` do MovieDB:
+
+    ```makefile
+    API_KEY=your_movie_db_api_key
+    ```
+
+   Para obter sua API Key, registre-se no [MovieDB](https://www.themoviedb.org/) e gere uma chave de API.
+
+3. Execute o setup do Docker utilizando o comando `make setup`:
+
+    ```bash
+    make setup
+    ```
+
+   Esse comando vai construir as imagens Docker necessárias para rodar a aplicação.
+
+## Execução
+
+Para rodar a aplicação, utilize o comando:
 
 ```bash
-make setup
-# and
 make run
-# or
-yarn dev
-# or
-bun dev
 ```
+O Docker irá iniciar os containers e a aplicação ficará disponível no seu navegador. O frontend irá se comunicar com a API do MovieDB e exibir resultados de busca enquanto você digita.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Como funciona?
+O projeto utiliza a API do MovieDB para realizar buscas por filmes em tempo real.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Ao digitar no campo de pesquisa, o frontend faz requisições para o backend, que consulta a API do MovieDB.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Os resultados são exibidos instantaneamente na interface.
 
-## Learn More
+## Estrutura do Projeto
+backend: Responsável pela comunicação com a API do MovieDB.
 
-To learn more about Next.js, take a look at the following resources:
+frontend: Interface de usuário para realizar as buscas.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+docker: Configuração do ambiente Docker.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Makefile: Automação de comandos para facilitar o setup e a execução do projeto.
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
