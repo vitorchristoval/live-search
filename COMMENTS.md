@@ -53,5 +53,15 @@ a ideia do useRef funcionou muito bem, pensei em adicionar um loading no final d
 
 Percebi que não tinha visto que o projeto precisava estar configurado com o docker, então vou fazer aqui uma configuração para seguir o pedido. 
 
-Apeasr de nunca ter configurado um docker, após ler algumas docs achei super tranquilo. Docker configurado!
+Apesar de nunca ter configurado um docker, após ler algumas docs achei super tranquilo. Docker configurado!
 
+Voltamos para o problema do favoritos, lembro de ver na documentação algo sobre sessões, talvez trabalhe com isso, preciso entender melhor como funciona esse fluxo, vou ler mais a doc.
+
+Fiz alguns testes com a sessão da API, porém daria muito trabalho para integrar e não funcionaria do jeito que eu gostaria. A pessoa teria q ter uma conta la para conectar e criar toda a sessão de favoritos e etc. O que acho que seria o ideal, mas como é apenas um teste, vou seguir com um localStorage dos IDS de favoritos, vou criar um contexto para lidar com o update dessa listagem e ter acesso na página de listagem.
+
+Pensei em criar um hooks tipo useFavorites que lide com toda parte de adicionar, salvar localstorage, buscar os filmes detalhados. Vou seguir nessa linha por achar que fica mais organizado, ao inves de só salvar os IDS e dai fazer a busca dos dados pelo componente.
+
+A tela de favoritos eu fiz uma listagem simplificada, mais fácil para ficar responsivo. E como eram poucas informações achei que ficaria mais legal.
+
+
+Acredito que finalizei tudo, ficou faltando os testes, vou seguir usando o padrão do Jest mesmo. Nada de novo.

@@ -8,4 +8,3 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-      - API_KEY=${API_KEY}

@@ -3,12 +3,18 @@ import { useState, KeyboardEvent, useEffect, useCallback } from 'react';
 import SuggestionsList from './SuggestionsList';
 import { useApiServices } from '@/hooks/useApiServices';
 import { Movie } from '@/types/movie';
+import React from 'react';
 
-export default function SearchInput() {
+interface SearchInputProps {
+  handleFavorites: (id: number) => void;
+}
+
+export default function SearchInput({ handleFavorites }: SearchInputProps) {
   const { request } = useApiServices();
   const [query, setQuery] = useState<string>('');
   const [page, setPage] = useState<number>(1);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [notFound, setNotFound] = useState<boolean>(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [autocomplete, setAutocomplete] = useState<string>('');
   const [suggestions, setSuggestions] = useState<Movie[]>([]);
@@ -26,14 +32,28 @@ export default function SearchInput() {
     };
   };
 
+  // Função para normalizar strings (remover acentos e tornar case insensitive)
+  const normalizeString = (str: string) => {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  };
+
+
   // Função para buscar sugestões
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchSuggestions = useCallback(debounce((query: string, page: number) => {
+    setLoading(true)
     request.get(`/search/movie?query=${query}&page=${page}`)
       .then((response) => {
+        const normalizedQuery = normalizeString(query);
+        const results = response.data.results.filter((movie: Movie) =>
+          normalizeString(movie.title).includes(normalizedQuery)
+        );
+        setNotFound(response.data.results.length === 0)
         if (page > 1) {
-          setSuggestions(prevSuggestions => [...prevSuggestions, ...response.data.results]);
+          setSuggestions(prevSuggestions => [...prevSuggestions, ...results]);
         } else {
-          setSuggestions(response.data.results);
+
+          setSuggestions(results);
         }
       })
       .catch((error) => { console.log(error) })
@@ -46,10 +66,10 @@ export default function SearchInput() {
     }
   }, [query, fetchSuggestions]);
 
+
+
   useEffect(() => {
-    setLoading(true)
     fetchSuggestions(query, page);
-    console.log(page)
   }, [page]);
 
   useEffect(() => {
@@ -100,6 +120,11 @@ export default function SearchInput() {
         setAutocomplete('');
       }
     }
+    else if (e.code === 'Space') {
+      if (selectedIndex >= 0) {
+        handleFav(filteredSuggestions[selectedIndex]);
+      }
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,10 +137,15 @@ export default function SearchInput() {
     }
   };
 
+
+  const handleFav = (item: Movie) => {
+    handleFavorites(item.id);
+  }
+
   return (
     <div className='mt-10 w-3/4'>
       <p className='text-sm font-medium text-[#464646] mb-1'>Pesquise um filme</p>
-      <div className='relative'>
+      <div className='relative flex overflow-hidden'>
         <input
           type="text"
           value={query}
@@ -134,17 +164,17 @@ export default function SearchInput() {
             readOnly
           />
         )}
-        {query ? <span className='absolute right-5 top-[10px] bg-white'>
+        {query ? <span className='absolute right-5  top-[10px] bg-white'>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 text-[#006EFF] bg-white">
             <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
           </svg>
-        </span> : <span className='absolute right-5 top-[10px]'><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">
+        </span> : <span className='absolute  right-5 top-[10px]'><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">
           <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
         </svg>
         </span>}
       </div>
       <p className='text-sm text-[#8E8E8E] mt-1'>Utilize as teclas ↓ ↑ para navegar entre as opções</p>
-      {filteredSuggestions.length > 0 && (
+      {filteredSuggestions && query && (
         <SuggestionsList
           suggestions={filteredSuggestions}
           selectedIndex={selectedIndex}
@@ -154,7 +184,10 @@ export default function SearchInput() {
           setPage={setPage}
           page={page}
           loading={loading}
+          handleFavorites={handleFav}
+          notFound={notFound}
         />)}
+
     </div>
   );
 }
